@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#173f35">
+    <meta name="description" content="Ficha completa de uma espécie no observatório BioConserva.">
+    <title><%= especie.nome_popular || especie.nome_cientifico || 'Ficha da espécie' %> | BioConserva</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="page-animal">
+    <% 
+        const valor = (value) => {
+            if (value === null || value === undefined || value === '') return 'Não informado';
+            if (value instanceof Date) return value.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+            return value;
+        };
+        const dataBR = (value) => {
+            if (value === null || value === undefined || value === '') return 'Não informado';
+            if (value instanceof Date) return value.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+            const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+            return match ? `${match[3]}/${match[2]}/${match[1]}` : value;
+        };
+        const percentual = (value) => {
+            if (value === null || value === undefined || value === '') return 'Não informado';
+            const numero = Number(value);
+            return Number.isFinite(numero)
+                ? `${numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`
+                : `${value}%`;
+        };
+    %>
+
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="/" aria-label="BioConserva — página inicial">
+                <span class="brand-mark" aria-hidden="true">🌿</span>
+                <span class="brand-copy">
+                    <strong>Bio<span>Conserva</span></strong>
+                    <small>Dados para proteger a vida</small>
+                </span>
+            </a>
+            <nav class="animal-header-nav" aria-label="Navegação principal">
+                <a href="/resultados" class="header-home-link"><span aria-hidden="true">←</span> Voltar aos resultados</a>
+                <a href="/" class="animal-home-link">Página inicial</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell animal-page-shell">
+        <nav class="animal-breadcrumb" aria-label="Você está em">
+            <a href="/">Início</a><span aria-hidden="true">/</span>
+            <a href="/resultados">Espécies</a><span aria-hidden="true">/</span>
+            <span><%= valor(especie.nome_popular) %></span>
+        </nav>
+
+        <section class="animal-hero">
+            <div class="animal-hero-image">
+                <img src="/images/<%= especie.id_especie %>.jpg"
+                     alt="Foto de <%= valor(especie.nome_popular) %>"
+                     onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('detail-image-fallback');">
+                <span class="animal-photo-note"><span aria-hidden="true">🌱</span> Observatório da biodiversidade</span>
+            </div>
+            <div class="animal-hero-content">
+                <span class="section-index">FICHA COMPLETA DA ESPÉCIE · ID <%= valor(especie.id_especie) %></span>
+                <div class="animal-status-line">
+                    <span class="risk-tag animal-risk-tag"><%= valor(especie.risco_sigla) %></span>
+                    <span class="animal-status-text"><%= valor(especie.risco_descricao) %></span>
+                </div>
+                <h1><%= valor(especie.nome_popular) %></h1>
+                <p class="animal-scientific-name"><%= valor(especie.nome_cientifico) %></p>
+                <p class="animal-hero-description">Consulte os dados taxonômicos, as ameaças registradas, as ocorrências geográficas, as métricas populacionais e as referências científicas vinculadas a esta espécie no banco BioConserva.</p>
+                <div class="animal-hero-counts">
+                    <div><strong><%= ameacas.length %></strong><span><%= ameacas.length === 1 ? 'ameaça registrada' : 'ameaças registradas' %></span></div>
+                    <div><strong><%= ocorrencias.length %></strong><span><%= ocorrencias.length === 1 ? 'ocorrência' : 'ocorrências' %></span></div>
+                    <div><strong><%= estatisticas.length %></strong><span><%= estatisticas.length === 1 ? 'registro estatístico' : 'registros estatísticos' %></span></div>
+                    <div><strong><%= referencias.length %></strong><span><%= referencias.length === 1 ? 'referência' : 'referências' %></span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="animal-data-section" aria-labelledby="taxonomia-title">
+            <div class="animal-section-heading">
+                <div><span class="section-index">TABELA: ESPECIE</span><h2 id="taxonomia-title">Informações da espécie</h2></div>
+                <p>Campos cadastrados diretamente no registro principal.</p>
+            </div>
+            <div class="animal-fields-grid">
+                <article class="animal-field"><span>ID da espécie</span><strong><%= valor(especie.id_especie) %></strong></article>
+                <article class="animal-field"><span>Nome popular</span><strong><%= valor(especie.nome_popular) %></strong></article>
+                <article class="animal-field"><span>Nome científico</span><strong class="scientific-value"><%= valor(especie.nome_cientifico) %></strong></article>
+                <article class="animal-field"><span>Família</span><strong><%= valor(especie.familia) %></strong></article>
+                <article class="animal-field"><span>Autor da descrição</span><strong><%= valor(especie.autor_descobrimento) %></strong></article>
+                <article class="animal-field"><span>ID do risco (chave estrangeira)</span><strong><%= valor(especie.id_risco) %></strong></article>
+            </div>
+        </section>
+
+        <section class="animal-data-section" aria-labelledby="risco-title">
+            <div class="animal-section-heading">
+                <div><span class="section-index">TABELA: CLASSIFICACAO_RISCO</span><h2 id="risco-title">Classificação de risco</h2></div>
+                <p>Categoria vinculada à espécie pela chave de risco.</p>
+            </div>
+            <div class="animal-related-card classification-card">
+                <div class="animal-fields-grid">
+                    <article class="animal-field"><span>ID do risco</span><strong><%= valor(especie.id_risco) %></strong></article>
+                    <article class="animal-field"><span>Sigla</span><strong><%= valor(especie.risco_sigla) %></strong></article>
+                    <article class="animal-field animal-field-wide"><span>Descrição da classificação</span><strong><%= valor(especie.risco_descricao) %></strong></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="animal-data-section" aria-labelledby="ameacas-title">
+            <div class="animal-section-heading">
+                <div><span class="section-index">TABELA: AMEACA_PRINCIPAL</span><h2 id="ameacas-title">Ameaças documentadas</h2></div>
+                <p>Fatores de risco associados à espécie no banco de dados.</p>
+            </div>
+            <% if (ameacas.length === 0) { %>
+                <div class="animal-empty-state"><span aria-hidden="true">🌿</span><div><strong>Nenhuma ameaça cadastrada</strong><p>Não há registros relacionados a esta espécie na tabela ameaca_principal.</p></div></div>
+            <% } else { %>
+                <div class="animal-record-list">
+                    <% ameacas.forEach(function(ameaca) { %>
+                        <article class="animal-related-card animal-threat-card">
+                            <div class="animal-record-heading"><span class="animal-record-icon" aria-hidden="true">!</span><div><span class="data-label">REGISTRO DE AMEAÇA</span><h3>Ameaça #<%= valor(ameaca.id_ameaca) %></h3></div></div>
+                            <div class="animal-fields-grid">
+                                <article class="animal-field"><span>ID da ameaça</span><strong><%= valor(ameaca.id_ameaca) %></strong></article>
+                                <article class="animal-field"><span>ID da espécie (chave estrangeira)</span><strong><%= valor(ameaca.id_especie) %></strong></article>
+                                <article class="animal-field animal-field-wide"><span>Descrição da ameaça</span><p class="animal-long-value"><%= valor(ameaca.descricao_ameaca) %></p></article>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
+
+        <section class="animal-data-section" aria-labelledby="ocorrencias-title">
+            <div class="animal-section-heading">
+                <div><span class="section-index">TABELA: OCORRENCIA</span><h2 id="ocorrencias-title">Ocorrências e localização</h2></div>
+                <p>Biomas, coordenadas e datas registrados para a espécie.</p>
+            </div>
+            <% if (ocorrencias.length === 0) { %>
+                <div class="animal-empty-state"><span aria-hidden="true">📍</span><div><strong>Nenhuma ocorrência cadastrada</strong><p>Não há registros relacionados a esta espécie na tabela ocorrencia.</p></div></div>
+            <% } else { %>
+                <div class="animal-record-list">
+                    <% ocorrencias.forEach(function(ocorrencia) { %>
+                        <article class="animal-related-card">
+                            <div class="animal-record-heading"><span class="animal-record-icon" aria-hidden="true">⌖</span><div><span class="data-label">REGISTRO GEOGRÁFICO</span><h3>Ocorrência #<%= valor(ocorrencia.id_ocorrencia) %></h3></div></div>
+                            <div class="animal-fields-grid">
+                                <article class="animal-field"><span>ID da ocorrência</span><strong><%= valor(ocorrencia.id_ocorrencia) %></strong></article>
+                                <article class="animal-field"><span>ID da espécie (chave estrangeira)</span><strong><%= valor(ocorrencia.id_especie) %></strong></article>
+                                <article class="animal-field"><span>ID da referência (chave estrangeira)</span><strong><%= valor(ocorrencia.id_referencia) %></strong></article>
+                                <article class="animal-field"><span>Bioma</span><strong><%= valor(ocorrencia.bioma) %></strong></article>
+                                <article class="animal-field"><span>Latitude</span><strong class="coordinate-value"><%= valor(ocorrencia.latitude) %></strong></article>
+                                <article class="animal-field"><span>Longitude</span><strong class="coordinate-value"><%= valor(ocorrencia.longitude) %></strong></article>
+                                <article class="animal-field"><span>Data do registro</span><strong><%= dataBR(ocorrencia.data_registro) %></strong></article>
+                            </div>
+                            <div class="animal-linked-reference">
+                                <span class="section-index">REFERÊNCIA VINCULADA À OCORRÊNCIA</span>
+                                <div class="animal-fields-grid">
+                                    <article class="animal-field"><span>Autores</span><strong><%= valor(ocorrencia.ref_autores) %></strong></article>
+                                    <article class="animal-field"><span>Título do artigo</span><strong><%= valor(ocorrencia.ref_titulo_artigo) %></strong></article>
+                                    <article class="animal-field"><span>Ano de publicação</span><strong><%= valor(ocorrencia.ref_ano_publicacao) %></strong></article>
+                                    <article class="animal-field"><span>Instituição vinculada</span><strong><%= valor(ocorrencia.ref_instituicao_vinculada) %></strong></article>
+                                    <article class="animal-field animal-field-wide"><span>DOI ou link</span><strong class="reference-link-value"><%= valor(ocorrencia.ref_doi_ou_link) %></strong></article>
+                                </div>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
+
+        <section class="animal-data-section" aria-labelledby="estatisticas-title">
+            <div class="animal-section-heading">
+                <div><span class="section-index">TABELA: ESTATISTICA_POPULACIONAL</span><h2 id="estatisticas-title">Métricas populacionais</h2></div>
+                <p>Estimativas e indicadores conforme o período de análise cadastrado.</p>
+            </div>
+            <% if (estatisticas.length === 0) { %>
+                <div class="animal-empty-state"><span aria-hidden="true">📊</span><div><strong>Nenhuma métrica cadastrada</strong><p>Não há registros relacionados a esta espécie na tabela estatistica_populacional.</p></div></div>
+            <% } else { %>
+                <div class="animal-record-list">
+                    <% estatisticas.forEach(function(estatistica) { %>
+                        <article class="animal-related-card">
+                            <div class="animal-record-heading"><span class="animal-record-icon" aria-hidden="true">↗</span><div><span class="data-label">REGISTRO ESTATÍSTICO</span><h3>Métrica #<%= valor(estatistica.id_estatistica) %></h3></div></div>
+                            <div class="animal-fields-grid">
+                                <article class="animal-field"><span>ID da estatística</span><strong><%= valor(estatistica.id_estatistica) %></strong></article>
+                                <article class="animal-field"><span>ID da espécie (chave estrangeira)</span><strong><%= valor(estatistica.id_especie) %></strong></article>
+                                <article class="animal-field"><span>ID da referência (chave estrangeira)</span><strong><%= valor(estatistica.id_referencia) %></strong></article>
+                                <article class="animal-field"><span>População estimada (indivíduos)</span><strong class="metric-value"><%= valor(estatistica.populacao_estimada) %></strong></article>
+                                <article class="animal-field"><span>Taxa de declínio</span><strong class="metric-value"><%= percentual(estatistica.taxa_declinio_percentual) %></strong></article>
+                                <article class="animal-field"><span>Perda de habitat</span><strong class="metric-value"><%= percentual(estatistica.perda_habitat_percentual) %></strong></article>
+                                <article class="animal-field animal-field-wide"><span>Período de análise</span><strong><%= valor(estatistica.periodo_analise) %></strong></article>
+                            </div>
+                            <div class="animal-linked-reference">
+                                <span class="section-index">REFERÊNCIA VINCULADA À MÉTRICA</span>
+                                <div class="animal-fields-grid">
+                                    <article class="animal-field"><span>Autores</span><strong><%= valor(estatistica.ref_autores) %></strong></article>
+                                    <article class="animal-field"><span>Título do artigo</span><strong><%= valor(estatistica.ref_titulo_artigo) %></strong></article>
+                                    <article class="animal-field"><span>Ano de publicação</span><strong><%= valor(estatistica.ref_ano_publicacao) %></strong></article>
+                                    <article class="animal-field"><span>Instituição vinculada</span><strong><%= valor(estatistica.ref_instituicao_vinculada) %></strong></article>
+                                    <article class="animal-field animal-field-wide"><span>DOI ou link</span><strong class="reference-link-value"><%= valor(estatistica.ref_doi_ou_link) %></strong></article>
+                                </div>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
+
+        <section class="animal-data-section" aria-labelledby="referencias-title">
+            <div class="animal-section-heading">
+                <div><span class="section-index">TABELA: PESQUISADOR_REFERENCIA</span><h2 id="referencias-title">Referências científicas relacionadas</h2></div>
+                <p>Referências associadas por ocorrências geográficas e/ou métricas populacionais, sem duplicar a mesma referência nesta seção.</p>
+            </div>
+            <% if (referencias.length === 0) { %>
+                <div class="animal-empty-state"><span aria-hidden="true">📚</span><div><strong>Nenhuma referência vinculada</strong><p>Não foi localizada uma referência associada a esta espécie por meio das tabelas ocorrencia ou estatistica_populacional.</p></div></div>
+            <% } else { %>
+                <div class="animal-record-list">
+                    <% referencias.forEach(function(referencia) { %>
+                        <article class="animal-related-card reference-card">
+                            <div class="animal-record-heading"><span class="animal-record-icon" aria-hidden="true">✳</span><div><span class="data-label">PUBLICAÇÃO CIENTÍFICA</span><h3><%= valor(referencia.titulo_artigo) %></h3></div></div>
+                            <div class="animal-fields-grid">
+                                <article class="animal-field"><span>ID da referência</span><strong><%= valor(referencia.id_referencia) %></strong></article>
+                                <article class="animal-field"><span>Autores</span><strong><%= valor(referencia.autores) %></strong></article>
+                                <article class="animal-field"><span>Ano de publicação</span><strong><%= valor(referencia.ano_publicacao) %></strong></article>
+                                <article class="animal-field"><span>Instituição vinculada</span><strong><%= valor(referencia.instituicao_vinculada) %></strong></article>
+                                <article class="animal-field animal-field-wide"><span>DOI ou link</span><strong class="reference-link-value"><%= valor(referencia.doi_ou_link) %></strong></article>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
+
+        <div class="animal-back-action">
+            <a href="/resultados" class="btn-primary">← Voltar para as espécies</a>
+            <a href="/" class="animal-secondary-action">Voltar ao início</a>
+        </div>
+
+        <footer class="site-footer">
+            <span>BioConserva</span>
+            <span>Conhecimento e conservação caminham juntos.</span>
+        </footer>
+    </main>
+</body>
+</html>

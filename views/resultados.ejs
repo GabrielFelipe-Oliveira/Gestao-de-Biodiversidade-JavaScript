@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#173f35">
+    <meta name="description" content="Resultados de pesquisas sobre biodiversidade e espécies ameaçadas.">
+    <title>Resultados | BioConserva</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="page-results">
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="/" aria-label="BioConserva — página inicial">
+                <span class="brand-mark" aria-hidden="true">🌿</span>
+                <span class="brand-copy">
+                    <strong>Bio<span>Conserva</span></strong>
+                    <small>Dados para proteger a vida</small>
+                </span>
+            </a>
+            <a href="/" class="header-home-link"><span aria-hidden="true">←</span> Página inicial</a>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="results-hero">
+            <div>
+                <p class="eyebrow">PAINEL DE EXPLORAÇÃO</p>
+                <h1>Gestão de biodiversidade <span>e espécies ameaçadas</span></h1>
+                <p class="hero-description">Use os filtros para refinar os registros e consulte as informações científicas disponíveis para cada espécie.</p>
+            </div>
+            <div class="results-hero-mark" aria-hidden="true">✳</div>
+        </section>
+
+        <section class="filters-panel" aria-label="Filtros dos resultados">
+            <div class="section-heading filter-panel-heading">
+                <div>
+                    <span class="section-index">REFINE SUA BUSCA</span>
+                    <h2 class="section-title">Filtros de pesquisa</h2>
+                </div>
+                <a href="/resultados" class="clear-filters"><span aria-hidden="true">↺</span> Limpar filtros</a>
+            </div>
+
+            <div class="filter-block">
+                <h3>Biomas</h3>
+                <div class="filter-group filter-chips">
+                    <% filtros.biomas.forEach(function(b) { %>
+                        <a href="/resultados?bioma=<%= b.bioma %>" class="btn-outline <%= queryAtual.bioma === b.bioma ? 'btn-active' : '' %>">
+                            <% if(queryAtual.bioma===b.bioma) { %><span class="active-mark" aria-hidden="true">✓</span><% } %>
+                            <%= b.bioma %>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="filter-block">
+                <h3>Animais</h3>
+                <div class="filter-group filter-chips">
+                    <% filtros.animais.forEach(function(a) { %>
+                        <span class="animal-filter-option">
+                            <a href="/resultados?animal=<%= a.id_especie %>" class="btn-outline <%= queryAtual.animal == a.id_especie ? 'btn-active' : '' %>">
+                                <% if(queryAtual.animal==a.id_especie) { %><span class="active-mark" aria-hidden="true">✓</span><% } %>
+                                <%= a.nome_popular %>
+                            </a>
+                            <a href="/animal/<%= a.id_especie %>" class="animal-details-mini" title="Ver ficha de <%= a.nome_popular %>" aria-label="Ver ficha completa de <%= a.nome_popular %>">↗</a>
+                        </span>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="filter-block filter-block-last">
+                <h3>Classificação de risco e declínio</h3>
+                <div class="filter-group filter-chips">
+                    <a href="/resultados?declinio=maior" class="btn-outline <%= queryAtual.declinio === 'maior' ? 'btn-active' : '' %>"><% if(queryAtual.declinio === 'maior') { %><span class="active-mark" aria-hidden="true">✓</span><% } %> Maior % de declínio</a>
+                    <a href="/resultados?declinio=menor" class="btn-outline <%= queryAtual.declinio === 'menor' ? 'btn-active' : '' %>"><% if(queryAtual.declinio === 'menor') { %><span class="active-mark" aria-hidden="true">✓</span><% } %> Menor % de declínio</a>
+                    <% filtros.riscos.forEach(function(r) { %>
+                        <a href="/resultados?risco=<%= r.sigla %>" class="btn-outline <%= queryAtual.risco === r.sigla ? 'btn-active' : '' %>">
+                            <% if(queryAtual.risco===r.sigla) { %><span class="active-mark" aria-hidden="true">✓</span><% } %>
+                            Classificação <%= r.sigla %>
+                        </a>
+                    <% }); %>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <div class="results-title-row">
+                <div>
+                    <span class="section-index">DADOS DISPONÍVEIS</span>
+                    <h2 class="section-title">Espécies monitoradas</h2>
+                </div>
+                <span class="result-count"><strong><%= animais.length %></strong> <%= animais.length === 1 ? 'registro' : 'registros' %></span>
+            </div>
+
+            <% if(animais.length===0) { %>
+                <div class="empty-state">
+                    <span class="empty-state-icon" aria-hidden="true">🌱</span>
+                    <h3>Nenhuma espécie encontrada</h3>
+                    <p>Não encontramos animais com essa combinação de filtros.</p>
+                    <a href="/resultados" class="btn-primary">Limpar filtros e ver tudo <span aria-hidden="true">→</span></a>
+                </div>
+            <% } else { %>
+                <div class="results-header" aria-hidden="true">
+                    <div>Espécie</div>
+                    <div>Descrição e ameaças</div>
+                    <div>Pesquisa relacionada</div>
+                    <div>Declínio</div>
+                </div>
+
+                <div class="results-list">
+                    <% animais.forEach(function(animal) { %>
+                        <article class="result-row">
+                            <a href="/animal/<%= animal.id_especie %>" class="result-img result-img-link" aria-label="Abrir ficha de <%= animal.nome_popular %>">
+                                <img src="/images/<%= animal.id_especie %>.jpg" alt="Foto: <%= animal.nome_popular %>" loading="lazy"
+                                    onerror="this.onerror=null; this.style.display='none'; this.parentElement.classList.add('image-fallback');">
+                                <span class="species-name"><%= animal.nome_popular %></span>
+                            </a>
+
+                            <div class="result-text species-details">
+                                <span class="data-label">ESPÉCIE</span>
+                                <h3><a class="species-title-link" href="/animal/<%= animal.id_especie %>"><%= animal.nome_cientifico %></a></h3>
+                                <p><strong>Família:</strong> <%= animal.familia %></p>
+                                <p><strong>Status IUCN:</strong> <span class="risk-tag"><%= animal.risco %></span> <%= animal.risco_desc %>.</p>
+                                <div class="threat-detail"><strong>Ameaça documentada</strong><p><%= animal.descricao_ameaca || 'Não documentada.' %></p></div>
+                                <a class="view-animal-link" href="/animal/<%= animal.id_especie %>">Ver ficha completa <span aria-hidden="true">→</span></a>
+                            </div>
+
+                            <div class="result-text research-details">
+                                <span class="data-label">REFERÊNCIA CIENTÍFICA</span>
+                                <% if(animal.titulo_artigo) { %>
+                                    <h3 class="research-title">“<%= animal.titulo_artigo %>”</h3>
+                                    <p><strong>Autores:</strong> <%= animal.autores %> (<%= animal.ano_publicacao %>).</p>
+                                    <p><strong>Instituição:</strong> <%= animal.instituicao_vinculada %></p>
+                                <% } else { %>
+                                    <p class="no-research">Nenhuma pesquisa vinculada a este registro.</p>
+                                <% } %>
+                            </div>
+
+                            <div class="decline-cell">
+                                <span class="data-label decline-label">TAXA DE DECLÍNIO</span>
+                                <% if(animal.taxa_declinio_percentual) { %>
+                                    <div class="circle-chart"><span><%= animal.taxa_declinio_percentual %></span><small>%</small></div>
+                                <% } else { %>
+                                    <div class="decline-na">N/D</div>
+                                <% } %>
+                            </div>
+                        </article>
+                    <% }); %>
+                </div>
+            <% } %>
+        </section>
+
+        <footer class="site-footer">
+            <span>BioConserva</span>
+            <span>Conhecimento e conservação caminham juntos.</span>
+        </footer>
+    </main>
+</body>
+</html>

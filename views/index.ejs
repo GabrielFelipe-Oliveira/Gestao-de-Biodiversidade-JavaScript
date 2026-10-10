@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#173f35">
+    <meta name="description" content="Explore informações sobre a biodiversidade brasileira, biomas e espécies ameaçadas.">
+    <title>BioConserva | Gestão de Biodiversidade</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="page-home">
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="/" aria-label="BioConserva — página inicial">
+                <span class="brand-mark" aria-hidden="true">🌿</span>
+                <span class="brand-copy">
+                    <strong>Bio<span>Conserva</span></strong>
+                    <small>Dados para proteger a vida</small>
+                </span>
+            </a>
+            <div class="header-pill"><span class="status-dot"></span> Observatório da biodiversidade</div>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero hero-home">
+            <div class="hero-copy">
+                <p class="eyebrow">CONSERVAÇÃO <span>•</span> CIÊNCIA <span>•</span> FUTURO</p>
+                <h1>Gestão de biodiversidade <span>e espécies ameaçadas</span></h1>
+                <p class="hero-description">Conheça as espécies brasileiras, descubra onde vivem e explore informações que ajudam a entender os desafios da conservação.</p>
+                <div class="hero-tags" aria-label="Temas disponíveis">
+                    <span>Biomas brasileiros</span>
+                    <span>Espécies ameaçadas</span>
+                    <span>Dados científicos</span>
+                </div>
+            </div>
+            <div class="hero-art" aria-hidden="true">
+                <div class="hero-art-orbit orbit-one"></div>
+                <div class="hero-art-orbit orbit-two"></div>
+                <div class="hero-leaf">🌱</div>
+                <div class="hero-art-note">
+                    <span class="note-icon">✳</span>
+                    <span><strong>Conhecer para conservar</strong><small>Informação a favor da vida.</small></span>
+                </div>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="section-heading">
+                <div>
+                    <span class="section-index">01 / EXPLORAÇÃO</span>
+                    <h2 class="section-title">Explore por bioma</h2>
+                </div>
+                <p>Selecione uma região natural para visualizar os registros associados.</p>
+            </div>
+            <div class="filter-group filter-chips">
+                <% filtros.biomas.forEach(function(b) { %>
+                    <a href="/resultados?bioma=<%= b.bioma %>" class="btn-outline"><%= b.bioma %><span class="chip-arrow" aria-hidden="true">↗</span></a>
+                <% }); %>
+                <span class="group-arrow" aria-hidden="true">→</span>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="section-heading">
+                <div>
+                    <span class="section-index">02 / ESPÉCIES</span>
+                    <h2 class="section-title">Encontre um animal</h2>
+                </div>
+                <p>Explore algumas das espécies monitoradas no banco de dados.</p>
+            </div>
+            <div class="filter-group filter-chips">
+                <% filtros.animais.slice(0, 5).forEach(function(a) { %>
+                    <span class="animal-filter-option">
+                        <a href="/resultados?animal=<%= a.id_especie %>" class="btn-outline"><%= a.nome_popular %><span class="chip-arrow" aria-hidden="true">↗</span></a>
+                        <a href="/animal/<%= a.id_especie %>" class="animal-details-mini" title="Ver ficha de <%= a.nome_popular %>" aria-label="Ver ficha completa de <%= a.nome_popular %>">ⓘ</a>
+                    </span>
+                <% }); %>
+                <a href="/resultados" class="filter-more">Ver todas as espécies <span aria-hidden="true">→</span></a>
+            </div>
+        </section>
+
+        <section class="filter-section">
+            <div class="section-heading">
+                <div>
+                    <span class="section-index">03 / CONSERVAÇÃO</span>
+                    <h2 class="section-title">Filtros de conservação</h2>
+                </div>
+                <p>Compare espécies por variação populacional e classificação de risco.</p>
+            </div>
+            <div class="filter-group filter-chips">
+                <a href="/resultados?declinio=maior" class="btn-outline">Maior % de declínio <span class="chip-arrow" aria-hidden="true">↗</span></a>
+                <a href="/resultados?declinio=menor" class="btn-outline">Menor % de declínio <span class="chip-arrow" aria-hidden="true">↗</span></a>
+                <% filtros.riscos.forEach(function(r) { %>
+                    <a href="/resultados?risco=<%= r.sigla %>" class="btn-outline">Classificação <%= r.sigla %><span class="chip-arrow" aria-hidden="true">↗</span></a>
+                <% }); %>
+                <a href="/resultados" class="filter-more">Ver resultados <span aria-hidden="true">→</span></a>
+            </div>
+        </section>
+
+        <section class="info-panel">
+            <div class="info-icon" aria-hidden="true">♧</div>
+            <div>
+                <span class="section-index">SOBRE A PLATAFORMA</span>
+                <h2>Informação que contribui para a conservação</h2>
+                <p>Este sistema centraliza dados reais sobre a biodiversidade brasileira, integrando métricas populacionais e classificação de risco da IUCN.</p>
+                <p>Utilize os filtros acima para cruzar informações de biomas, animais e graus de ameaça para gerar relatórios dinâmicos e precisos.</p>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <span>BioConserva</span>
+            <span>Conhecimento e conservação caminham juntos.</span>
+        </footer>
+    </main>
+</body>
+</html>

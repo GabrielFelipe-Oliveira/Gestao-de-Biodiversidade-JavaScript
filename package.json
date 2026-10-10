@@ -1,0 +1,26 @@
+{
+  "name": "biodiversidade-app",
+  "version": "1.0.0",
+  "description": "Aplicação web para consulta de biodiversidade e espécies ameaçadas, com Node.js, Express, EJS e MySQL.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "biodiversidade",
+    "conservacao",
+    "especies-ameacadas",
+    "nodejs",
+    "express",
+    "mysql"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "ejs": "^7.0.1",
+    "express": "^5.3.0",
+    "mysql2": "^3.24.5"
+  }
+}
